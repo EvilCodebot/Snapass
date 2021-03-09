@@ -29,10 +29,10 @@ jobs:
           node-version: '14.x'
           
       - name: Install dependencies
-      run: yarn
+        run: yarn
       
       - name: Build app
-      run: yarn build 
+        run: yarn build 
       
 
 
