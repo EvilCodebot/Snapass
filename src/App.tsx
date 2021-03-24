@@ -3,25 +3,52 @@ import React from "react";
 import "./App.css";
 
 import { useState } from "react";
-
+import axios from "axios";
 
 function App() {
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (popUpState == false) {
-      setPopUp(!popUpState);
-      console.log("hello");
-    }
-  }
+  let popUp;
+
+  const apiURL =
+    "https://ikeb1e8o0e.execute-api.ap-southeast-2.amazonaws.com/api/secret";
 
   const [popUpState, setPopUp] = useState(false);
+  const [apiResponse, setApiResponse] = useState(0); // stores api response
+  const [secret, setSecret] = useState(""); // stores user input text
 
-  let popUp;
+  function handleChange(evt: React.ChangeEvent<HTMLTextAreaElement>) {
+    setSecret(evt.target.value);
+  }
+
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
+    axios
+      .post(apiURL, {
+        secret: secret,
+      })
+      .then(function (response) {
+        console.log(response);
+        // console.log(response.status)
+        // console.log(response.data)
+        if (popUpState == false) {
+          setPopUp(!popUpState);
+        }
+
+        setApiResponse(response.status);
+      })
+      .catch(function (error) {
+        console.log(error);
+        console.log("eroor lol");
+      });
+  }
 
   if (popUpState == true) {
     popUp = (
       <div className="popup">
-        <a href="#">www.secret.com</a>
+        <a href="#">
+          {apiResponse} {secret}{" "}
+        </a>
+
         <button onClick={() => setPopUp(!popUpState)}>x</button>
       </div>
     );
@@ -30,9 +57,15 @@ function App() {
   return (
     <div>
       <form onSubmit={handleSubmit} className="center">
-        <textarea className="input"></textarea>
+        <textarea
+          className="input"
+          value={secret}
+          onChange={handleChange}
+        ></textarea>
 
-        <input type="submit" value="click here!" className="submitButton" />
+        <button type="submit" className="submitButton">
+          Click here !
+        </button>
       </form>
 
       {popUp}
