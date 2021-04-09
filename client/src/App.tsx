@@ -1,17 +1,13 @@
-import React from "react";
-
+import React, { useState } from "react";
 import "./App.css";
-
-import { useState } from "react";
 import axios from "axios";
+import config from "./config.json";
 
 function App() {
   let popUp;
+  const inactive = false;
 
-  const apiURL =
-    "https://ikeb1e8o0e.execute-api.ap-southeast-2.amazonaws.com/api/secret";
-
-  const [popUpState, setPopUp] = useState(false);
+  const [popUpState, setPopUp] = useState(inactive); // if state is active pop up box appears
   const [apiResponse, setApiResponse] = useState(0); // stores api response
   const [secret, setSecret] = useState(""); // stores user input text
 
@@ -23,14 +19,14 @@ function App() {
     event.preventDefault();
 
     axios
-      .post(apiURL, {
+      .post(config.apiURL, {
         secret: secret,
       })
       .then(function (response) {
         console.log(response);
         // console.log(response.status)
         // console.log(response.data)
-        if (popUpState == false) {
+        if (popUpState == inactive) {
           setPopUp(!popUpState);
         }
 
@@ -38,7 +34,7 @@ function App() {
       })
       .catch(function (error) {
         console.log(error);
-        console.log("eroor lol");
+        console.log("error");
       });
   }
 
@@ -56,15 +52,15 @@ function App() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="center">
+      <form onSubmit={handleSubmit} className="centerForm">
         <textarea
-          className="input"
+          className="inputArea"
           value={secret}
           onChange={handleChange}
         ></textarea>
 
         <button type="submit" className="submitButton">
-          Click here !
+          Click here to submit!
         </button>
       </form>
 
