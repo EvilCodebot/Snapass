@@ -1,54 +1,49 @@
 const express = require("express");
 const authServiceClient = require("./services/authServiceClient");
-const axios = require("axios");
+const secretServiceClient = require("./services/secretServiceClient");
 
 const app = express();
 const port = 4000;
 let secretID;
+let token;
 
-app.use("/api/postSecret", (req, res) => {
+app.use("/api/getToken", (req, res) => {
   authServiceClient
     .getToken()
     .then((value) => {
-      console.log(value.data.access_token);
+      token = value.data.access_token;
+
+      res.json("The token is: " + token);
+      console.log(token);
       console.log("---------------------------");
-
-      authServiceClient
-        .postSecret(value.data.access_token)
-        .then((value) => {
-          secretID = value.data.id;
-
-          res.json("The secret id is: " + secretID);
-          console.log("The secret id is: " + secretID);
-          console.log("---------------------------");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
     })
     .catch((err) => {
       console.log(err);
     });
 });
 
-// get token from api first then get secret from api
-app.use("/api/getSecret", (req, res) => {
-  authServiceClient
-    .getToken()
+app.use("/api/postSecret", (req, res) => {
+  secretServiceClient
+    .postSecret(token)
     .then((value) => {
-      console.log(value.data.access_token);
-      console.log("---------------------------");
+      secretID = value.data.id;
 
-      authServiceClient
-        .getSecret(value.data.access_token, secretID)
-        .then((value) => {
-          res.json("The message of the secret is: " + value.data.body);
-          console.log("The message of the secret is: " + value.data.body);
-          console.log("---------------------------");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      res.json("The secret id is: " + secretID);
+      console.log("The secret id is: " + secretID);
+      console.log("---------------------------");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.use("/api/getSecret", (req, res) => {
+  secretServiceClient
+    .getSecret(token, secretID)
+    .then((value) => {
+      res.json("The message of the secret is: " + value.data.body);
+      console.log("The message of the secret is: " + value.data.body);
+      console.log("---------------------------");
     })
     .catch((err) => {
       console.log(err);
