@@ -1,11 +1,15 @@
 const express = require("express");
 const authServiceClient = require("./services/authServiceClient");
 const secretServiceClient = require("./services/secretServiceClient");
+const path = require('path')
+
 
 const app = express();
 const port = 4000;
 let secretID;
 let token;
+
+app.use(express.static(path.join(__dirname, '../client/build')))
 
 app.use("/api/getToken", (req, res) => {
   authServiceClient

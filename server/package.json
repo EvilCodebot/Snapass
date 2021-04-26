@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The frontend server for snappass.",
   "main": "index.js",
-  "author": "Simon FENG",
+  "author": "Anlan Zhang",
   "license": "MIT",
   "private": true,
   "dependencies": {

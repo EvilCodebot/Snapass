@@ -1,3 +1,4 @@
 {
-    "apiURL": "https://ikeb1e8o0e.execute-api.ap-southeast-2.amazonaws.com/api/secret"
+  "apiURL": "http://localhost:4000/api/getToken",
+  "apiPostSecret": "http://localhost:4000/api/postSecret"
 }
