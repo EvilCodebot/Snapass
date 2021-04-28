@@ -3,8 +3,6 @@ import "./App.css";
 import axios from "axios";
 import config from "./config.json";
 
-import { Link } from "react-router-dom";
-
 function App() {
   let popUp;
   const inactive = false;
@@ -23,7 +21,7 @@ function App() {
     console.log("clicked");
 
     axios
-      .post(config.apiURL)
+      .post(config.apiPostSecret)
       .then(function (response) {
         console.log(response);
         // console.log(response.status)
@@ -33,16 +31,6 @@ function App() {
         }
 
         setApiResponse(response.status);
-
-        axios
-          .post(config.apiPostSecret)
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-            console.log("error");
-          });
       })
       .catch(function (error) {
         console.log(error);
@@ -64,7 +52,6 @@ function App() {
 
   return (
     <div>
-      <Link to="/api/getToken">gettheToken</Link>
       <form onSubmit={handleSubmit} className="centerForm">
         <textarea
           className="inputArea"

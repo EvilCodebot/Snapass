@@ -1,17 +1,16 @@
 const express = require("express");
 const authServiceClient = require("./services/authServiceClient");
 const secretServiceClient = require("./services/secretServiceClient");
-const path = require('path')
-
+const path = require("path");
 
 const app = express();
 const port = 4000;
 let secretID;
 let token;
 
-app.use(express.static(path.join(__dirname, '../client/build')))
+app.use(express.static(path.join(__dirname, "../client/build")));
 
-app.use("/api/getToken", (req, res) => {
+app.use((req, res, next) => {
   authServiceClient
     .getToken()
     .then((value) => {
@@ -24,6 +23,8 @@ app.use("/api/getToken", (req, res) => {
     .catch((err) => {
       console.log(err);
     });
+
+  next();
 });
 
 app.use("/api/postSecret", (req, res) => {
