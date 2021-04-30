@@ -10,8 +10,10 @@ let token;
 
 app.use(express.static(path.join(__dirname, "../client/build")));
 
-app.use((req, res, next) => {
-  authServiceClient
+const jsonParser = express.json();
+
+const getToken = async (req, res, next) => {
+  await authServiceClient
     .getToken()
     .then((value) => {
       token = value.data.access_token;
@@ -25,15 +27,14 @@ app.use((req, res, next) => {
     });
 
   next();
-});
+};
 
-app.use("/api/postSecret", (req, res) => {
+app.use("/api/postSecret", getToken, jsonParser, (req, res) => {
   secretServiceClient
-    .postSecret(token)
+    .postSecret(token, req.body.secret)
     .then((value) => {
       secretID = value.data.id;
-
-      res.json("The secret id is: " + secretID);
+      // res.json("The secret id is: " + secretID);
       console.log("The secret id is: " + secretID);
       console.log("---------------------------");
     })
@@ -42,11 +43,11 @@ app.use("/api/postSecret", (req, res) => {
     });
 });
 
-app.use("/api/getSecret", (req, res) => {
+app.use("/api/getSecret", getToken, (req, res) => {
   secretServiceClient
     .getSecret(token, secretID)
     .then((value) => {
-      res.json("The message of the secret is: " + value.data.body);
+      // res.json("The message of the secret is: " + value.data.body);
       console.log("The message of the secret is: " + value.data.body);
       console.log("---------------------------");
     })

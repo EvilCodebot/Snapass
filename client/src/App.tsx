@@ -21,7 +21,7 @@ function App() {
     console.log("clicked");
 
     axios
-      .post(config.apiPostSecret)
+      .post(config.apiPostSecret, { secret: secret })
       .then(function (response) {
         console.log(response);
         // console.log(response.status)
@@ -31,6 +31,7 @@ function App() {
         }
 
         setApiResponse(response.status);
+        console.log(secret);
       })
       .catch(function (error) {
         console.log(error);

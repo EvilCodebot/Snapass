@@ -2,10 +2,10 @@ const axios = require("axios");
 const config = require("../config.json");
 
 module.exports = {
-  postSecret: (token) => {
+  postSecret: (token, secret) => {
     return axios.post(
       config.secretApi.baseUrl,
-      { secret: "This is a test baby" },
+      { secret: secret },
       {
         headers: { Authorization: `Bearer ${token}` },
       }
