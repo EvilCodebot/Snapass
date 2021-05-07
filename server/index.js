@@ -2,9 +2,10 @@ const express = require("express");
 const authServiceClient = require("./services/authServiceClient");
 const secretServiceClient = require("./services/secretServiceClient");
 const path = require("path");
+const config = require("./config");
 
 const app = express();
-const port = 4000;
+const port = config.port;
 let secretID;
 let token;
 
