@@ -3,6 +3,10 @@ import "./App.css";
 import axios from "axios";
 import config from "./config.json";
 
+import { Link } from "react-router-dom";
+
+let id = ""; // stores secretID needed to getSecret
+
 function App() {
   let popUp;
   const inactive = false;
@@ -18,12 +22,11 @@ function App() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    console.log("clicked");
-
     axios
       .post(config.apiPostSecret, { secret: secret })
       .then(function (response) {
-        console.log(response);
+        id = response.data;
+        console.log("this is secret id: " + id);
         // console.log(response.status)
         // console.log(response.data)
         if (popUpState == inactive) {
@@ -53,6 +56,8 @@ function App() {
 
   return (
     <div>
+      <Link to={`/secret/${id}`}>Dashboard</Link>
+
       <form onSubmit={handleSubmit} className="centerForm">
         <textarea
           className="inputArea"

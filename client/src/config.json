@@ -1,3 +1,4 @@
 {
-  "apiPostSecret": "/api/postSecret"
+  "apiPostSecret": "/api/postSecret",
+  "apiGetSecret": "/api/getSecret"
 }

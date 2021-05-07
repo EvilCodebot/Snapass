@@ -18,7 +18,7 @@ const getToken = async (req, res, next) => {
     .then((value) => {
       token = value.data.access_token;
 
-      res.json("The token is: " + token);
+      // res.json("The token is: " + token);
       console.log(token);
       console.log("---------------------------");
     })
@@ -37,6 +37,7 @@ app.use("/api/postSecret", getToken, jsonParser, (req, res) => {
       // res.json("The secret id is: " + secretID);
       console.log("The secret id is: " + secretID);
       console.log("---------------------------");
+      res.send(secretID);
     })
     .catch((err) => {
       console.log(err);
@@ -50,6 +51,8 @@ app.use("/api/getSecret", getToken, (req, res) => {
       // res.json("The message of the secret is: " + value.data.body);
       console.log("The message of the secret is: " + value.data.body);
       console.log("---------------------------");
+
+      res.send(value.data.body);
     })
     .catch((err) => {
       console.log(err);

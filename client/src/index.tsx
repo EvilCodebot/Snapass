@@ -4,20 +4,14 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <App />
-//   </React.StrictMode>,
-//   document.getElementById("root")
-// );
+import displaySecretComponent from "./displaySecretComponent";
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
       <Switch>
         <Route path="/" exact component={App} />
-        <Route path="/api/getToken" component={App} />
+        <Route path="/secret/:id" exact component={displaySecretComponent} />
       </Switch>
     </Router>
   </React.StrictMode>,
