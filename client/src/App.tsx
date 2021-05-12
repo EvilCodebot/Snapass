@@ -2,18 +2,31 @@ import React, { useState } from "react";
 import "./App.css";
 import axios from "axios";
 import config from "./config.json";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { Link } from "react-router-dom";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Spinner from "react-bootstrap/Spinner";
+import Alert from "react-bootstrap/Alert";
 
 let id = ""; // stores secretID needed to getSecret
 
-function App() {
-  let popUp;
-  const inactive = false;
+interface props {
+  onHide: any;
+  show: any;
+}
 
-  const [popUpState, setPopUp] = useState(inactive); // if state is active pop up box appears
-  const [apiResponse, setApiResponse] = useState(0); // stores api response
+function App() {
+  const inactive = false;
+  const active = true;
+
+  const [modalState, setModalState] = useState(inactive); // if state is a modal appears
+  const [errorResponse, setErrorResponse] = useState(0); // stores error response
   const [secret, setSecret] = useState(""); // stores user input text
+  const [loadingStatus, setLoadingStatus] = useState(inactive); // for spinner
+  const [showErrorAlert, setShowErrorAlert] = useState(inactive); // bootstrap alert to display error
 
   function handleChange(evt: React.ChangeEvent<HTMLTextAreaElement>) {
     setSecret(evt.target.value);
@@ -22,56 +35,111 @@ function App() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
+    setLoadingStatus(true);
+
     axios
-      .post(config.apiPostSecret, { secret: secret })
+      .post(config.apiPostSecret, { secret: secret }, { timeout: 20000 }) // timeout 20 seconds
       .then(function (response) {
         id = response.data;
         console.log("this is secret id: " + id);
         // console.log(response.status)
         // console.log(response.data)
-        if (popUpState == inactive) {
-          setPopUp(!popUpState);
-        }
 
-        setApiResponse(response.status);
+        setLoadingStatus(false);
+        setModalState(active);
+
         console.log(secret);
       })
       .catch(function (error) {
         console.log(error);
+        console.log(error.response);
         console.log("error");
+
+        setErrorResponse(error.response);
+        setShowErrorAlert(true);
       });
+
+    setSecret("");
   }
 
-  if (popUpState == true) {
-    popUp = (
-      <div className="popup">
-        <a href="#">
-          {apiResponse} {secret}{" "}
-        </a>
+  function LoadingSpinner() {
+    return (
+      <Spinner animation="border" role="status">
+        <span className="sr-only">Loading...</span>
+      </Spinner>
+    );
+  }
 
-        <button onClick={() => setPopUp(!popUpState)}>x</button>
-      </div>
+  function ErrorAlert() {
+    if (showErrorAlert) {
+      return (
+        <Alert
+          variant="danger"
+          onClose={() => setShowErrorAlert(false)}
+          dismissible
+        >
+          <Alert.Heading>Opps! You got an error!</Alert.Heading>
+          {errorResponse}
+        </Alert>
+      );
+    }
+    return null;
+  }
+
+  function MyVerticallyCenteredModal(props: props) {
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            http://localhost:3000/secret/{id}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            With this link your friend will be able to see your secret message!
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={props.onHide}>
+            Close
+          </Button>
+          <CopyToClipboard text={`http://localhost:3000/secret/${id}`}>
+            <Button variant="primary">Copy</Button>
+          </CopyToClipboard>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
   return (
-    <div>
-      <Link to={`/secret/${id}`}>Dashboard</Link>
+    <Container>
+      <Form onSubmit={handleSubmit} className="centerForm">
+        <ErrorAlert />
 
-      <form onSubmit={handleSubmit} className="centerForm">
         <textarea
           className="inputArea"
+          placeholder="Please enter your secret here!"
           value={secret}
           onChange={handleChange}
         ></textarea>
 
-        <button type="submit" className="submitButton">
+        <Button type="submit" className="submitButton">
           Click here to submit!
-        </button>
-      </form>
+        </Button>
+      </Form>
 
-      {popUp}
-    </div>
+      {loadingStatus ? <LoadingSpinner /> : null}
+
+      <MyVerticallyCenteredModal
+        show={modalState}
+        onHide={() => setModalState(inactive)}
+      />
+    </Container>
   );
 }
 

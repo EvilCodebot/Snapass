@@ -13,6 +13,10 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 
 const jsonParser = express.json();
 
+app.get("/secret/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+});
+
 const getToken = async (req, res, next) => {
   await authServiceClient
     .getToken()
@@ -31,6 +35,15 @@ const getToken = async (req, res, next) => {
 };
 
 app.use("/api/postSecret", getToken, jsonParser, (req, res) => {
+  const { secret } = req.body;
+
+  if (!secret) {
+    return res.status(400).json({
+      status: "error",
+      message: "Missing required secret field",
+    });
+  }
+
   secretServiceClient
     .postSecret(token, req.body.secret)
     .then((value) => {

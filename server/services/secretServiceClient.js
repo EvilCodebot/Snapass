@@ -8,13 +8,18 @@ module.exports = {
       { secret: secret },
       {
         headers: { Authorization: `Bearer ${token}` },
-      }
+      },
+      { timeout: 20000 }
     );
   },
 
   getSecret: (token, SecretID) => {
-    return axios.get(config.secretApi.baseUrl + SecretID, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    return axios.get(
+      config.secretApi.baseUrl + SecretID,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      { timeout: 20000 }
+    );
   },
 };

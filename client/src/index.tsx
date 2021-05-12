@@ -7,14 +7,14 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import displaySecretComponent from "./displaySecretComponent";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Router>
-      <Switch>
-        <Route path="/" exact component={App} />
-        <Route path="/secret/:id" exact component={displaySecretComponent} />
-      </Switch>
-    </Router>
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <Router>
+    <Switch>
+      <Route path="/" exact component={App} />
+      <Route path="/secret/:id" exact component={displaySecretComponent} />
+    </Switch>
+  </Router>,
+  // </React.StrictMode>,
   document.getElementById("root")
 );
 
