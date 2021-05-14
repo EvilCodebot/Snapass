@@ -23,7 +23,7 @@ function App() {
   const active = true;
 
   const [modalState, setModalState] = useState(inactive); // if state is a modal appears
-  const [errorResponse, setErrorResponse] = useState(0); // stores error response
+  const [errorResponse, setErrorResponse] = useState(""); // stores error response
   const [secret, setSecret] = useState(""); // stores user input text
   const [loadingStatus, setLoadingStatus] = useState(inactive); // for spinner
   const [showErrorAlert, setShowErrorAlert] = useState(inactive); // bootstrap alert to display error
@@ -35,31 +35,37 @@ function App() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    setLoadingStatus(true);
+    // checking if secret is empty
+    if (!secret) {
+      setShowErrorAlert(active);
+      setErrorResponse("Secret can not be empty");
+    } else {
+      setLoadingStatus(true);
 
-    axios
-      .post(config.apiPostSecret, { secret: secret }, { timeout: 20000 }) // timeout 20 seconds
-      .then(function (response) {
-        id = response.data;
-        console.log("this is secret id: " + id);
-        // console.log(response.status)
-        // console.log(response.data)
+      axios
+        .post(config.apiPostSecret, { secret: secret }, { timeout: 20000 }) // timeout 20 seconds
+        .then(function (response) {
+          id = response.data;
+          console.log("this is secret id: " + id);
+          // console.log(response.status)
+          // console.log(response.data)
 
-        setLoadingStatus(false);
-        setModalState(active);
+          setLoadingStatus(false);
+          setModalState(active);
 
-        console.log(secret);
-      })
-      .catch(function (error) {
-        console.log(error);
-        console.log(error.response);
-        console.log("error");
+          console.log(secret);
+        })
+        .catch(function (error) {
+          console.log(error);
+          console.log(error.response);
+          console.log("error");
 
-        setErrorResponse(error.response);
-        setShowErrorAlert(true);
-      });
+          setErrorResponse(error.response);
+          setShowErrorAlert(true);
+        });
 
-    setSecret("");
+      setSecret("");
+    }
   }
 
   function LoadingSpinner() {

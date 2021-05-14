@@ -1,0 +1,8 @@
+.git
+.gitignore
+Dockerfile
+**/.DS_Store
+*/.env
+*/node_modules/
+README.md
+*/yarn.lock
