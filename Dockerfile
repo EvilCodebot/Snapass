@@ -1,4 +1,4 @@
-FROM node:15.8.0-alpine AS build-env
+FROM node:16-alpine3.12 AS build-env
 
 RUN mkdir /client
 WORKDIR /client
@@ -9,7 +9,7 @@ COPY ./client/ ./
 RUN npm install
 RUN npm run build
 
-FROM node:15.8.0-alpine AS runtime
+FROM node:16-alpine3.12 AS runtime
 
 RUN mkdir /server
 WORKDIR /server

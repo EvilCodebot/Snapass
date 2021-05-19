@@ -23,7 +23,6 @@ const getToken = async (req, res, next) => {
     .then((value) => {
       token = value.data.access_token;
 
-      // res.json("The token is: " + token);
       console.log(token);
       console.log("---------------------------");
     })
@@ -70,6 +69,11 @@ app.use("/api/getSecret", getToken, (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      console.log(err.response.status);
+
+      if (err.response.status == 400) {
+        res.status(400).send("The secret has been viewed and destroyed!");
+      }
     });
 });
 
