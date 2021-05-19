@@ -12,6 +12,8 @@ on:
     - master
     - release/*
     - bugfix/*
+  
+  workflow_dispatch:
 
 jobs:
 
