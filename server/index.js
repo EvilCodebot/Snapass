@@ -71,8 +71,8 @@ app.use("/api/getSecret", getToken, (req, res) => {
       console.log(err);
       console.log(err.response.status);
 
-      if (err.response.status == 400) {
-        res.status(400).send("The secret has been viewed and destroyed!");
+      if (err.response.status == 404) {
+        res.status(404).send("The secret has been viewed and destroyed!");
       }
     });
 });
