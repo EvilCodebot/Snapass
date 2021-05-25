@@ -9,12 +9,12 @@ const port = config.port;
 let secretID;
 let token;
 
-app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(express.static(path.join(__dirname, "build")));
 
 const jsonParser = express.json();
 
 app.get("/secret/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./build", "index.html"));
 });
 
 const getToken = async (req, res, next) => {

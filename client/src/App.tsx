@@ -102,7 +102,7 @@ function App() {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            http://localhost:3000/secret/{id}
+            http://localhost:4000/secret/{id}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -114,7 +114,7 @@ function App() {
           <Button variant="secondary" onClick={props.onHide}>
             Close
           </Button>
-          <CopyToClipboard text={`http://localhost:3000/secret/${id}`}>
+          <CopyToClipboard text={`http://localhost:4000/secret/${id}`}>
             <Button variant="primary">Copy</Button>
           </CopyToClipboard>
         </Modal.Footer>
