@@ -9,12 +9,12 @@ const port = config.port;
 let secretID;
 let token;
 
-app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(express.static(path.join(__dirname, "build")));
 
 const jsonParser = express.json();
 
 app.get("/secret/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./build", "index.html"));
 });
 
 const getToken = async (req, res, next) => {
@@ -71,8 +71,8 @@ app.use("/api/getSecret", getToken, (req, res) => {
       console.log(err);
       console.log(err.response.status);
 
-      if (err.response.status == 400) {
-        res.status(400).send("The secret has been viewed and destroyed!");
+      if (err.response.status == 404) {
+        res.status(404).send("The secret has been viewed and destroyed!");
       }
     });
 });
