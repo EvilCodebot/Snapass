@@ -40,7 +40,7 @@ function App() {
       setShowErrorAlert(active);
       setErrorResponse("Secret can not be empty");
     } else {
-      setLoadingStatus(true);
+      setLoadingStatus(active);
 
       axios
         .post(config.apiPostSecret, { secret: secret }, { timeout: 20000 }) // timeout 20 seconds
@@ -50,30 +50,65 @@ function App() {
           // console.log(response.status)
           // console.log(response.data)
 
-          setLoadingStatus(false);
+          setLoadingStatus(inactive);
           setModalState(active);
 
           console.log(secret);
         })
         .catch(function (error) {
-          console.log(error);
-          console.log(error.response);
-          console.log("error");
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
 
-          setErrorResponse(error.response);
-          setShowErrorAlert(true);
+            setErrorResponse(error.response.data.message);
+            setShowErrorAlert(active);
+            setLoadingStatus(inactive);
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+
+            setErrorResponse(error.message);
+            setShowErrorAlert(active);
+            setLoadingStatus(inactive);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+          }
+          console.log(error.config);
         });
 
       setSecret("");
     }
   }
 
-  function LoadingSpinner() {
-    return (
-      <Spinner animation="border" role="status">
-        <span className="sr-only">Loading...</span>
-      </Spinner>
-    );
+  function SubmitButton() {
+    if (loadingStatus == inactive) {
+      return (
+        <Button type="submit" className="submitButton">
+          Click here to submit!
+        </Button>
+      );
+    } else if (loadingStatus == active) {
+      return (
+        <Button className="submitButton" variant="primary" disabled>
+          <Spinner
+            as="span"
+            animation="grow"
+            size="sm"
+            role="status"
+            aria-hidden="true"
+          />
+          Loading...
+        </Button>
+      );
+    } else {
+      return null;
+    }
   }
 
   function ErrorAlert() {
@@ -81,7 +116,7 @@ function App() {
       return (
         <Alert
           variant="danger"
-          onClose={() => setShowErrorAlert(false)}
+          onClose={() => setShowErrorAlert(inactive)}
           dismissible
         >
           <Alert.Heading>Opps! You got an error!</Alert.Heading>
@@ -102,14 +137,10 @@ function App() {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            http://localhost:4000/secret/{id}
+            With this link your friend will be able to see your secret message!
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <p>
-            With this link your friend will be able to see your secret message!
-          </p>
-        </Modal.Body>
+        <Modal.Body>http://localhost:4000/secret/{id}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={props.onHide}>
             Close
@@ -134,12 +165,8 @@ function App() {
           onChange={handleChange}
         ></textarea>
 
-        <Button type="submit" className="submitButton">
-          Click here to submit!
-        </Button>
+        <SubmitButton />
       </Form>
-
-      {loadingStatus ? <LoadingSpinner /> : null}
 
       <MyVerticallyCenteredModal
         show={modalState}

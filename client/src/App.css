@@ -6,7 +6,7 @@ html {
   justify-content: center;
   align-items: center;
 
-  background-image: url(https://background-tiles.com/overview/white/patterns/large/1025.png);
+  background-image: url(./assets/lock-background.jpg);
   background-repeat: repeat;
 }
 
@@ -18,7 +18,7 @@ html {
 
 .inputArea {
   width: 100%;
-  height: 80%;
+  height: 100%;
   /* opacity: 0.6; */
 }
 
@@ -38,7 +38,7 @@ html {
 
   .inputArea {
     width: 100%;
-    height: 90%;
+    height: 100%;
     /* opacity: 0.6; */
   }
 }
