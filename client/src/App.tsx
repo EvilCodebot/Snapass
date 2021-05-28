@@ -3,8 +3,6 @@ import "./App.css";
 import axios from "axios";
 import config from "./config.json";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-
-import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -155,7 +153,6 @@ function App() {
           </Button>
 
           <CopyToClipboard text={`${window.location.href}secret/${id}`}>
-
             <Button variant="primary">Copy</Button>
           </CopyToClipboard>
         </Modal.Footer>
@@ -164,25 +161,36 @@ function App() {
   }
 
   return (
-    <Container>
-      <Form onSubmit={handleSubmit} className="centerForm">
-        <ErrorAlert />
+    <div className="background">
+      <div>
+        <h1
+          style={{
+            color: "#ffb347",
+            fontFamily: "Brush Script MT, Helvetica, sans-serif",
+            fontSize: "3em",
+          }}
+        >
+          Snapass
+        </h1>
+        <Form onSubmit={handleSubmit} className="centerForm">
+          <ErrorAlert />
 
-        <textarea
-          className="inputArea"
-          placeholder="Please enter your secret here!"
-          value={secret}
-          onChange={handleChange}
-        ></textarea>
+          <textarea
+            className="inputArea"
+            placeholder="Please enter your secret here!"
+            value={secret}
+            onChange={handleChange}
+          ></textarea>
 
-        <SubmitButton />
-      </Form>
+          <SubmitButton />
+        </Form>
 
-      <MyVerticallyCenteredModal
-        show={modalState}
-        onHide={() => setModalState(inactive)}
-      />
-    </Container>
+        <MyVerticallyCenteredModal
+          show={modalState}
+          onHide={() => setModalState(inactive)}
+        />
+      </div>
+    </div>
   );
 }
 

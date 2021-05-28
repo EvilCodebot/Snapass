@@ -11,7 +11,9 @@ function displaySecretComponent() {
   const [loadingStatus, setLoadingStatus] = useState(false);
 
   function LoadingSpinner() {
-    return <Spinner animation="border" role="status"></Spinner>;
+    return (
+      <Spinner animation="border" variant="primary" role="status"></Spinner>
+    );
   }
 
   useEffect(() => {
@@ -34,9 +36,12 @@ function displaySecretComponent() {
   }, []);
 
   return (
-    <div>
-      {loadingStatus ? (
-        <h1 className="box">The secret is : {secret} </h1>
+    <div className="background">
+     
+      {loadingStatus ? ( <div>
+        <h1 style={{color: "#ffb347", fontFamily:"Brush Script MT, Helvetica, sans-serif", fontSize:"3em"}}>Snapass</h1>     
+        <h2 className="box"> <b>The secret is :</b> {secret} </h2>
+      </div>
       ) : (
         <LoadingSpinner />
       )}
