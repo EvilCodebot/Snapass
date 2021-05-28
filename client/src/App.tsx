@@ -43,7 +43,11 @@ function App() {
       setLoadingStatus(active);
 
       axios
-        .post(config.apiPostSecret, { secret: secret }, { timeout: 20000 }) // timeout 20 seconds
+        .post(
+          config.apiPostSecret,
+          { secret: btoa(secret) },
+          { timeout: 20000 }
+        ) // timeout 20 seconds
         .then(function (response) {
           id = response.data;
           console.log("this is secret id: " + id);
@@ -140,12 +144,18 @@ function App() {
             With this link your friend will be able to see your secret message!
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>http://localhost:4000/secret/{id}</Modal.Body>
+
+        <Modal.Body>
+          {window.location.href}secret/{id}{" "}
+        </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={props.onHide}>
             Close
           </Button>
-          <CopyToClipboard text={`http://localhost:4000/secret/${id}`}>
+
+          <CopyToClipboard text={`${window.location.href}secret/${id}`}>
+
             <Button variant="primary">Copy</Button>
           </CopyToClipboard>
         </Modal.Footer>
