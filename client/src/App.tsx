@@ -144,14 +144,18 @@ function App() {
             With this link your friend will be able to see your secret message!
           </Modal.Title>
         </Modal.Header>
+
         <Modal.Body>
           {window.location.href}secret/{id}{" "}
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={props.onHide}>
             Close
           </Button>
+
           <CopyToClipboard text={`${window.location.href}secret/${id}`}>
+
             <Button variant="primary">Copy</Button>
           </CopyToClipboard>
         </Modal.Footer>
