@@ -3,13 +3,14 @@ import config from "./config.json";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
+import "./displaySecretComponet.css";
 
 function displaySecretComponent() {
   let { id } = useParams();
   const [secret, setSecret] = useState(null);
   const [loadingStatus, setLoadingStatus] = useState(false);
 
-  function Hello() {
+  function LoadingSpinner() {
     return <Spinner animation="border" role="status"></Spinner>;
   }
 
@@ -18,7 +19,8 @@ function displaySecretComponent() {
     axios
       .post(`${config.apiGetSecret}/${id}`)
       .then(function (response) {
-        setSecret(response.data);
+        // setSecret(JSON.stringify(response.data));
+        setSecret(atob(response.data));
         setLoadingStatus(true);
       })
       .catch(function (error) {
@@ -32,7 +34,13 @@ function displaySecretComponent() {
   }, []);
 
   return (
-    <div>{loadingStatus ? <h1>The secret is : {secret} </h1> : <Hello />}</div>
+    <div>
+      {loadingStatus ? (
+        <h1 className="box">The secret is : {secret} </h1>
+      ) : (
+        <LoadingSpinner />
+      )}
+    </div>
   );
 }
 
