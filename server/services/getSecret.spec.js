@@ -43,15 +43,3 @@ it("should return a promise which is not null.", () => {
   // Assert
   expect(promise).not.toBeNull();
 });
-
-it("should post through axios once", async () => {
-  ///arrange
-  a = authServiceClient.getToken;
-  b = secretServiceClient.postSecret(a);
-
-  // Act
-  await secretServiceClient.getSecret(a.access_token, b.id);
-
-  // Assert
-  expect(mockGetSecret).toHaveBeenCalledTimes(1);
-});

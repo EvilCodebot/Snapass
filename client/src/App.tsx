@@ -1,15 +1,19 @@
-import React, { useState } from "react";
 import "./App.css";
 import axios from "axios";
 import config from "./config.json";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import React, { useState, useRef } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "react-bootstrap/Alert";
+import Overlay from "react-bootstrap/Overlay";
+import Popover from "react-bootstrap/Popover";
+import Dropdown from "react-bootstrap/Dropdown";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import QRCode from "qrcode.react";
 
-let id = ""; // stores secretID needed to getSecret
+let id = ""; // stores secretID, later on used to getSecret
 
 interface props {
   onHide: any;
@@ -20,11 +24,17 @@ function App() {
   const inactive = false;
   const active = true;
 
-  const [modalState, setModalState] = useState(inactive); // if state is a modal appears
-  const [errorResponse, setErrorResponse] = useState(""); // stores error response
   const [secret, setSecret] = useState(""); // stores user input text
-  const [loadingStatus, setLoadingStatus] = useState(inactive); // for spinner
+  const [loadingStatus, setLoadingStatus] = useState(inactive); // submit button changes to loading if  loadingStatus state is active
+  const [errorResponse, setErrorResponse] = useState(""); // stores error response, will be used in alert
   const [showErrorAlert, setShowErrorAlert] = useState(inactive); // bootstrap alert to display error
+  const targetTipOne = useRef(null); // for positioning popover
+  const targetTipTwo = useRef(null);
+  const [resultModalState, setResultModalState] = useState(inactive); // if state is active, ResultModalState appears
+  const [tutorialModalState, setTutorialModalState] = useState(active); // modal appears when user first enters website to give them a tutorial, activates TipOne when closed
+  const [showTipOne, setShowTipOne] = useState(inactive); // used for activating tip popover
+  const [showTipTwo, setShowTipTwo] = useState(inactive);
+  const [language, setLanguage] = useState("PlainText"); // set language for dropdown button
 
   function handleChange(evt: React.ChangeEvent<HTMLTextAreaElement>) {
     setSecret(evt.target.value);
@@ -33,29 +43,33 @@ function App() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    // checking if secret is empty
+    // checking if secret is empty, if empty error alert appears
     if (!secret) {
       setShowErrorAlert(active);
       setErrorResponse("Secret can not be empty");
     } else {
       setLoadingStatus(active);
 
+      // axios.post to send secret value, recieves secretID that can later be used to access secret in response
+      // secret and language value first stored in a JSON then its turned into a string, finally btoa turn the string into base64
       axios
         .post(
           config.apiPostSecret,
-          { secret: btoa(secret) },
+          {
+            secret: btoa(
+              JSON.stringify({
+                secret: secret,
+                language: language,
+              })
+            ),
+          },
           { timeout: 20000 }
         ) // timeout 20 seconds
         .then(function (response) {
-          id = response.data;
-          console.log("this is secret id: " + id);
-          // console.log(response.status)
-          // console.log(response.data)
+          id = response.data; // stores returned secretID
 
           setLoadingStatus(inactive);
-          setModalState(active);
-
-          console.log(secret);
+          setResultModalState(active);
         })
         .catch(function (error) {
           if (error.response) {
@@ -65,7 +79,7 @@ function App() {
             console.log(error.response.status);
             console.log(error.response.headers);
 
-            setErrorResponse(error.response.data.message);
+            setErrorResponse(error.response.data); // stores error response, will be used in error alert
             setShowErrorAlert(active);
             setLoadingStatus(inactive);
           } else if (error.request) {
@@ -74,7 +88,7 @@ function App() {
             // http.ClientRequest in node.js
             console.log(error.request);
 
-            setErrorResponse(error.message);
+            setErrorResponse(error.message); // stores error response, will be used in error alert
             setShowErrorAlert(active);
             setLoadingStatus(inactive);
           } else {
@@ -83,21 +97,52 @@ function App() {
           }
           console.log(error.config);
         });
-
-      setSecret("");
+      setSecret(""); // clears input area
     }
   }
 
+  // when axios is still pending, will return loading button to indicate user it's still pending
   function SubmitButton() {
     if (loadingStatus == inactive) {
       return (
-        <Button type="submit" className="submitButton">
-          Click here to submit!
-        </Button>
+        <>
+          <Button
+            type="submit"
+            variant="warning"
+            className="submitButton"
+            ref={targetTipTwo}
+          >
+            Click here to submit!
+          </Button>
+
+          <Overlay target={targetTipTwo} show={showTipTwo} placement="top">
+            <Popover id="popover-basic">
+              <Popover.Title
+                as="h3"
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                Tip 2
+                <Button
+                  size="sm"
+                  variant="warning"
+                  onClick={() => {
+                    setShowTipTwo(inactive);
+                  }}
+                >
+                  Done
+                </Button>
+              </Popover.Title>
+              <Popover.Content>
+                When your ready, click on the button, a shareable link will be
+                automatically generated for you to share with your friends.
+              </Popover.Content>
+            </Popover>
+          </Overlay>
+        </>
       );
     } else if (loadingStatus == active) {
       return (
-        <Button className="submitButton" variant="primary" disabled>
+        <Button className="submitButton" variant="warning" disabled>
           <Spinner
             as="span"
             animation="grow"
@@ -129,7 +174,7 @@ function App() {
     return null;
   }
 
-  function MyVerticallyCenteredModal(props: props) {
+  function MyResultModal(props: props) {
     return (
       <Modal
         {...props}
@@ -140,11 +185,28 @@ function App() {
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
             With this link your friend will be able to see your secret message!
+            Secret will be automatically destoryed after viewed once.
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          {window.location.href}secret/{id}{" "}
+          {/* window.location.href gets current url */}
+          <p style={{ borderStyle: "solid", borderRadius: "5px" }}>
+            {window.location.href}secret/{id}{" "}
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {" "}
+            <QRCode value={`${window.location.href}secret/${id}`} />
+            Your friend can also access your secret via this QR code.
+          </div>
         </Modal.Body>
 
         <Modal.Footer>
@@ -153,8 +215,36 @@ function App() {
           </Button>
 
           <CopyToClipboard text={`${window.location.href}secret/${id}`}>
-            <Button variant="primary">Copy</Button>
+            <Button variant="warning">Copy</Button>
           </CopyToClipboard>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
+  function MyTutorialModal(props: props) {
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">Welcome</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          Snapass lets you easily share &quot;secret&quot; message with you
+          friend over the brower. messages in Snapass will be automatically
+          deleted by default from our servers after we detect they&rsquo;ve been
+          opened.
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="warning" onClick={props.onHide}>
+            OK
+          </Button>
         </Modal.Footer>
       </Modal>
     );
@@ -162,19 +252,14 @@ function App() {
 
   return (
     <div className="background">
-      <div>
-        <h1
-          style={{
-            color: "#ffb347",
-            fontFamily: "Brush Script MT, Helvetica, sans-serif",
-            fontSize: "3em",
-          }}
-        >
-          Snapass
-        </h1>
-        <Form onSubmit={handleSubmit} className="centerForm">
+      <div className="container">
+        {showErrorAlert ? (
           <ErrorAlert />
+        ) : (
+          <span className="appTitle">Snapass</span>
+        )}
 
+        <Form onSubmit={handleSubmit} className="formArea">
           <textarea
             className="inputArea"
             placeholder="Please enter your secret here!"
@@ -182,12 +267,96 @@ function App() {
             onChange={handleChange}
           ></textarea>
 
-          <SubmitButton />
+          <div className="containerTwo">
+            <Dropdown className="dropDownButton">
+              <Dropdown.Toggle
+                variant="warning"
+                id="dropdown-basic"
+                ref={targetTipOne}
+              >
+                {language}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  onSelect={() => {
+                    setLanguage("CSS");
+                  }}
+                >
+                  CSS
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    setLanguage("Javascript");
+                  }}
+                >
+                  Javascript
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    setLanguage("Markdown");
+                  }}
+                >
+                  Markdown
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    setLanguage("Python");
+                  }}
+                >
+                  Python
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    setLanguage("PlainText");
+                  }}
+                >
+                  PlainText
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+
+            <Overlay target={targetTipOne} show={showTipOne} placement="top">
+              <Popover id="popover-basic">
+                <Popover.Title
+                  as="h3"
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  Tip 1
+                  <Button
+                    size="sm"
+                    variant="warning"
+                    onClick={() => {
+                      setShowTipOne(inactive);
+                      setShowTipTwo(active);
+                    }}
+                  >
+                    ok
+                  </Button>
+                </Popover.Title>
+                <Popover.Content>
+                  Select the format you wish to enter, supports original
+                  markdown and sytnax highlighting. Just leave it on PlainText
+                  if you do not know what this does.
+                </Popover.Content>
+              </Popover>
+            </Overlay>
+
+            <SubmitButton />
+          </div>
         </Form>
 
-        <MyVerticallyCenteredModal
-          show={modalState}
-          onHide={() => setModalState(inactive)}
+        <MyTutorialModal
+          show={tutorialModalState}
+          onHide={() => {
+            setTutorialModalState(inactive);
+            setShowTipOne(true);
+          }}
+        />
+
+        <MyResultModal
+          show={resultModalState}
+          onHide={() => setResultModalState(inactive)}
         />
       </div>
     </div>

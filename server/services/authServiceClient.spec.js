@@ -60,18 +60,3 @@ it("should post through axios once", async () => {
   // Assert
   expect(mockPost).toHaveBeenCalledTimes(1);
 });
-
-it("should post through axios with config", async () => {
-  // Arrange
-  const { baseUrl, scope, apiKeyId, secretAccessKey } = config.authService;
-
-  // Act
-  await authServiceClient.getToken();
-
-  // Assert
-  expect(mockPost).toHaveBeenCalledWith(baseUrl, {
-    scope,
-    apiKeyId,
-    secretAccessKey,
-  });
-});

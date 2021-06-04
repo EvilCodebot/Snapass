@@ -1,51 +1,68 @@
-.background {
-  width: 100vw;
-  height: 100vh;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
+html {
   background-image: url(./assets/lock-background.jpg);
   background-repeat: repeat;
+
+  width: 100%;
+  height: 100%;
 }
 
-.centerForm {
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.appTitle {
+  color: #ffb347;
+  font-family: Brush Script MT, Helvetica, sans-serif;
+  font-size: 3em;
+}
+
+.formArea {
   height: 75vh;
-  width: 60vw;
+  width: 65vw;
 }
 
 .inputArea {
-  width: 100%;
   height: 100%;
-
+  width: 100%;
   border-radius: 5px;
   border: 4px solid #333333;
   background-color: #f9f8f0;
-
-  font-size: 1.25em;
+  /* font-size: 3em; */
 }
 
-.submitButton {
-  display: block;
+.containerTwo {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
 }
 
+.submitButton {
+  width: 50%;
+}
+
 @media screen and (max-width: 50rem) {
-  .centerForm {
-    display: block;
+  .formArea {
     height: 80vh;
     width: 80vw;
   }
 
   .inputArea {
-    width: 100%;
     height: 100%;
-
+    width: 100%;
     border-radius: 5px;
     border: 4px solid #333333;
     background-color: #f9f8f0;
-
     font-size: 1em;
+  }
+
+  .appTitle {
+    color: #ffb347;
+    font-family: Brush Script MT, Helvetica, sans-serif;
+    font-size: 2.4em;
   }
 }
