@@ -294,6 +294,13 @@ function App() {
                 </Dropdown.Item>
                 <Dropdown.Item
                   onSelect={() => {
+                    setLanguage("JSON");
+                  }}
+                >
+                  JSON
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
                     setLanguage("Markdown");
                   }}
                 >

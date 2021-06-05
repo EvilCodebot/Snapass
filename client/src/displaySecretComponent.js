@@ -8,6 +8,7 @@ import Alert from "react-bootstrap/Alert";
 import marked from "marked";
 import DOMPurify from "dompurify";
 import SyntaxHighlighter from "react-syntax-highlighter";
+import { a11yLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 function displaySecretComponent() {
   const inactive = false;
@@ -92,13 +93,31 @@ function displaySecretComponent() {
   function DisplaySecret() {
     if (language == "CSS") {
       return (
-        <SyntaxHighlighter language="css" wrapLongLines="true">
+        <SyntaxHighlighter
+          language="css"
+          wrapLongLines="true"
+          customStyle={{ background: "rgb(249,248,240)" }}
+        >
           {secret}
         </SyntaxHighlighter>
       );
     } else if (language == "Javascript") {
       return (
-        <SyntaxHighlighter language="javascript" wrapLongLines="true">
+        <SyntaxHighlighter
+          language="javascript"
+          wrapLongLines="true"
+          customStyle={{ background: "rgb(249,248,240)" }}
+        >
+          {secret}
+        </SyntaxHighlighter>
+      );
+    } else if (language == "JSON") {
+      return (
+        <SyntaxHighlighter
+          language="json"
+          wrapLongLines="true"
+          customStyle={{ background: "rgb(249,248,240)" }}
+        >
           {secret}
         </SyntaxHighlighter>
       );
@@ -106,7 +125,11 @@ function displaySecretComponent() {
       return <div dangerouslySetInnerHTML={createMarkup(secret)}></div>;
     } else if (language == "Python") {
       return (
-        <SyntaxHighlighter language="python" wrapLongLines="true">
+        <SyntaxHighlighter
+          language="python"
+          wrapLongLines="true"
+          customStyle={{ background: "rgb(249,248,240)" }}
+        >
           {secret}
         </SyntaxHighlighter>
       );
